@@ -1,11 +1,14 @@
 import express from "express";
-import { getUser,updateUser,deleteUser } from "../controllers/userControllers.js";
+import { getUser,updateUser,deleteUser,follow,unfollow } from "../controllers/userControllers.js";
 const userRouter = express.Router();
-userRouter.get("/:id", getUser);
-userRouter.put("/:id", updateUser);
-userRouter.delete("/:id", deleteUser);
+userRouter.get("/single_user/:id", getUser);
+userRouter.put("/update/:id", updateUser);
+userRouter.delete("/delete/:id", deleteUser);
+userRouter.put("/follow/:id", follow);
+userRouter.put("/unfollow/:id", unfollow);
 
 
-// authRouter.post("/login", login);
+
+
 
 export default userRouter;

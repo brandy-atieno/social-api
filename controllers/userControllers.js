@@ -1,5 +1,6 @@
 import userModel from "../models/userModel.js";
 import bcrypt from "bcrypt";
+// get user
 export const getUser = async (req, res) => {
   const { id } = req.params;
   try {
@@ -14,9 +15,10 @@ export const getUser = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+//update user
 export const updateUser = async (req, res) => {
   const { id } = req.params;
-  const { userId, password,isAdmin } = req.body;
+  const { userId, password, isAdmin } = req.body;
   if (userId === id || isAdmin) {
     if (req.body.password) {
       try {
@@ -38,18 +40,63 @@ export const updateUser = async (req, res) => {
     res.status(401).json({ message: "Only update your account" });
   }
 };
+//delete user
 export const deleteUser = async (req, res) => {
-    const { id } = req.params;
-    const { userId, password ,isAmin} = req.body;
-    if (userId === id || isAdmin) {
-        
-      try {
-        const user = await userModel.findByIdAndDelete(id);
-        res.status(200).json({ message: "Deleted" });
-      } catch (err) {
-        return res.status(500).json({ message: err.message });
-      }
-    } else {
-      res.status(401).json({ message: "Only update your account" });
+  const { id } = req.params;
+  const { userId, password, isAdmin } = req.body;
+  if (userId === id || isAdmin) {
+    try {
+      const user = await userModel.findByIdAndDelete(id);
+      res.status(200).json({ message: "Deleted" });
+    } catch (err) {
+      res.status(500).json({ message: err.message });
     }
+  } else {
+    res.status(401).json({ message: "Only update your account" });
+  }
+};
+//follow
+export const follow = async (req, res) => {
+  const { id } = req.params;
+  const { userId } = req.body;
+  if (userId !== id) {
+    try {
+      const user = await userModel.findById(id);
+      const currentUser = await userModel.findById(userId);
+      if (!user.followers.includes(userId)) {
+        await user.updateOne({ $push: { followers: userId } });
+        await currentUser.updateOne({ $push: { following: id } });
+        res.status(200).json({ message: "User being follwed" });
+      } else {
+        res.status(403).json({ message: "Already following" });
+      }
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  } else {
+    res.status(403).json({ message: "Cannot follow yoursel" });
+  }
+};
+
+//unfollow
+export const unfollow = async (req, res) => {
+  const { id } = req.params;
+  const { userId } = req.body;
+  if (userId !== id) {
+    try {
+      const user = await userModel.findById(id);
+      const currentUser = await userModel.findById(userId);
+      if (user.followers.includes(userId)) {
+        await user.updateOne({ $pull: { followers: userId } });
+        await currentUser.updateOne({ $pull: { following: id } });
+        res.status(200).json({ message: "User unfollwed" });
+      } else {
+        res.status(403).json({ message: "Already unfollowed" });
+      }
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  } else {
+    res.status(403).json({ message: "Cannot unfollow yourself" });
+  }
 };

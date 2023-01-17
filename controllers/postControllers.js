@@ -1,4 +1,6 @@
 import postModel from "../models/postModel.js";
+import userModel from "../models/userModel.js";
+
 // upload post
 export const uploadPost = async (req, res) => {
   const postData = req.body;
@@ -68,6 +70,22 @@ export const getPost = async (req, res) => {
   try {
     const post = await postModel.findById(id);
     res.status(200).json({ message: post });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+//timeline posts
+export const getTimelinePosts = async (req, res) => {
+  const { userId } = req.body;
+  try {
+    const currentUser = await userModel.findById(userId);
+    const userPosts = await postModel.find({ userId: currentUser._id });
+    const followersPosts = await Promise.all(
+      currentUser.following.map((followerId) => {
+       return postModel.find({ userId: followerId });
+      })
+    )
+    res.json(userPosts.concat(followersPosts));
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

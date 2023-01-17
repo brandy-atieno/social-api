@@ -32,7 +32,7 @@ export const updateUser = async (req, res) => {
       const user = await userModel.findByIdAndUpdate(id, {
         $set: req.body,
       });
-      res.status(200).json({ message: "Updated" });
+      res.status(200).json({ message: "Updated",data:user });
     } catch (err) {
       return res.status(500).json({ message: err.message });
     }
@@ -43,7 +43,7 @@ export const updateUser = async (req, res) => {
 //delete user
 export const deleteUser = async (req, res) => {
   const { id } = req.params;
-  const { userId, password, isAdmin } = req.body;
+  const { userId, isAdmin } = req.body;
   if (userId === id || isAdmin) {
     try {
       const user = await userModel.findByIdAndDelete(id);
@@ -89,9 +89,9 @@ export const unfollow = async (req, res) => {
       if (user.followers.includes(userId)) {
         await user.updateOne({ $pull: { followers: userId } });
         await currentUser.updateOne({ $pull: { following: id } });
-        res.status(200).json({ message: "User unfollwed" });
+        res.status(200).json({ message: " unfollwed user" });
       } else {
-        res.status(403).json({ message: "Already unfollowed" });
+        res.status(403).json({ message: "Already unfollowed user" });
       }
     } catch (err) {
       res.status(500).json({ message: err.message });

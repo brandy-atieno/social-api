@@ -85,7 +85,7 @@ export const getTimelinePosts = async (req, res) => {
        return postModel.find({ userId: followerId });
       })
     )
-    res.json(userPosts.concat(followersPosts));
+    res.status(200).json(userPosts.concat(followersPosts));
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

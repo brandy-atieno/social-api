@@ -80,12 +80,12 @@ export const getTimelinePosts = async (req, res) => {
   try {
     const currentUser = await userModel.findById(userId);
     const userPosts = await postModel.find({ userId: currentUser._id });
-    const followersPosts = await Promise.all(
-      currentUser.following.map((followerId) => {
-       return postModel.find({ userId: followerId });
+    const followingPosts = await Promise.all(
+      currentUser.following.map(followedId => {
+       return postModel.find({ userId: followedId });
       })
     )
-    res.status(200).json(userPosts.concat(followersPosts));
+    res.status(200).json(userPosts.concat(...followingPosts));
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

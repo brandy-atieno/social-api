@@ -1,7 +1,14 @@
 # social-api
 social media api using node,express and mongodb
+ 
+ 
+ 
+ 
+DEPENDENCIES
 
-dependencies
+
+NPM INSTALL
+
 express
 nodemon
 bcrypt
